@@ -4,7 +4,6 @@ namespace UserAgreementBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use DoctrineEnhanceBundle\Repository\CommonRepositoryAware;
 use UserAgreementBundle\Entity\RevokeRequest;
 
 /**
@@ -15,7 +14,6 @@ use UserAgreementBundle\Entity\RevokeRequest;
  */
 class RevokeRequestRepository extends ServiceEntityRepository
 {
-    use CommonRepositoryAware;
 
     public function __construct(ManagerRegistry $registry)
     {

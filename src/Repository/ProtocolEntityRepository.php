@@ -4,7 +4,6 @@ namespace UserAgreementBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use DoctrineEnhanceBundle\Repository\CommonRepositoryAware;
 use UserAgreementBundle\Entity\ProtocolEntity;
 
 /**
@@ -17,7 +16,6 @@ use UserAgreementBundle\Entity\ProtocolEntity;
  */
 class ProtocolEntityRepository extends ServiceEntityRepository
 {
-    use CommonRepositoryAware;
 
     public function __construct(ManagerRegistry $registry)
     {

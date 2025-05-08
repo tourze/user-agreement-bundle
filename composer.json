@@ -18,6 +18,7 @@
     "symfony/event-dispatcher-contracts": "^2.5 | ^3",
     "symfony/http-kernel": "^6.4",
     "symfony/security-bundle": "^6.4",
+    "symfony/security-core": "^6.4",
     "tourze/arrayable": "0.0.*",
     "tourze/bundle-dependency": "0.0.*",
     "tourze/doctrine-indexed-bundle": "0.0.*",
@@ -30,8 +31,6 @@
     "tourze/enum-extra": "~0.0.5",
     "tourze/json-rpc-core": "^0.0.6",
     "tourze/json-rpc-lock-bundle": "0.1.*",
-    "tourze/symfony-ecol-bundle": "0.1.*",
-    "symfony/security-core": "^6.4",
     "tourze/symfony-async-bundle": "0.0.*"
   },
   "require-dev": {
