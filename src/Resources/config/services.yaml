@@ -5,17 +5,13 @@ services:
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     public: true
 
-  UserAgreementBundle\:
-    resource: '../../'
-    exclude:
-      - '../../DependencyInjection/'
-      - '../../Attribute/'
-      - '../../Enum/'
-      - '../../Entity/'
-      - '../../Event/'
-      - '../../Message/'
-      - '../../Model/'
-      - '../../Exception/'
-      - '../../Resources/'
-      - '../../Tests/'
-      - '../../LegacyProcedure/'
+  UserAgreementBundle\Controller\:
+    resource: '../../Controller/'
+  UserAgreementBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+  UserAgreementBundle\Procedure\:
+    resource: '../../Procedure/'
+  UserAgreementBundle\Repository\:
+    resource: '../../Repository/'
+  UserAgreementBundle\Service\:
+    resource: '../../Service/'

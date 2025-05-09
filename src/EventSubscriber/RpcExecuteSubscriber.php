@@ -2,7 +2,6 @@
 
 namespace UserAgreementBundle\EventSubscriber;
 
-use AppBundle\Entity\BizUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Tourze\JsonRPC\Core\Event\BeforeMethodApplyEvent;
@@ -33,9 +32,6 @@ class RpcExecuteSubscriber
         $user = $this->security->getUser();
         if (!$user) {
             throw new TermsNeedAgreeException();
-        }
-        if (!($user instanceof BizUser)) {
-            return;
         }
 
         $attribute = $attributes[0]->newInstance();

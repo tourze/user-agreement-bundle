@@ -1,6 +1,6 @@
 <?php
 
-namespace UserAgreementBundle;
+namespace UserAgreementBundle\Service;
 
 use Knp\Menu\ItemInterface;
 use Tourze\EasyAdminMenuBundle\Service\LinkGeneratorInterface;

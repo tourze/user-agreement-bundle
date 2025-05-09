@@ -1,6 +1,6 @@
 {
-  "name": "tourze/social-crm-bundle",
-  "description": "客户关系管理",
+  "name": "tourze/user-agreement-bundle",
+  "description": "用户协议管理",
   "type": "symfony-bundle",
   "license": "MIT",
   "require": {

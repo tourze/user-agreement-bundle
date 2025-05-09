@@ -2,9 +2,9 @@
 
 namespace UserAgreementBundle\Service;
 
-use AppBundle\Entity\BizUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Tourze\Symfony\Async\Attribute\Async;
 use UserAgreementBundle\Entity\AgreeLog;
 use UserAgreementBundle\Enum\ProtocolType;
@@ -21,7 +21,7 @@ class ProtocolService
     ) {
     }
 
-    public function checkAgree(BizUser $bizUser, ProtocolType $type): bool
+    public function checkAgree(UserInterface $bizUser, ProtocolType $type): bool
     {
         $protocol = $this->protocolEntityRepository->findOneBy([
             'type' => $type,
@@ -43,7 +43,7 @@ class ProtocolService
     }
 
     #[Async]
-    public function autoAgree(BizUser $bizUser, ProtocolType $type, bool $bool = true): void
+    public function autoAgree(UserInterface $bizUser, ProtocolType $type, bool $bool = true): void
     {
         $protocol = $this->protocolEntityRepository->findOneBy([
             'type' => $type,
