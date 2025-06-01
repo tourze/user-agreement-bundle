@@ -39,7 +39,7 @@
     "tourze/json-rpc-lock-bundle": "0.1.*",
     "tourze/json-rpc-log-bundle": "0.1.*",
     "tourze/symfony-async-bundle": "0.0.*",
-    "tourze/user-event-bundle": "~0.0.3",
+    "tourze/user-event-bundle": "0.0.*",
     "tourze/user-id-bundle": "0.1.*"
   },
   "require-dev": {
