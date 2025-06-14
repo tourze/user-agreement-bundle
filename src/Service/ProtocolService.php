@@ -5,7 +5,7 @@ namespace UserAgreementBundle\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Tourze\Symfony\Async\Attribute\Async;
+use Tourze\Symfony\AopAsyncBundle\Attribute\Async;
 use UserAgreementBundle\Entity\AgreeLog;
 use UserAgreementBundle\Enum\ProtocolType;
 use UserAgreementBundle\Repository\AgreeLogRepository;
