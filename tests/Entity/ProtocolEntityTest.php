@@ -56,7 +56,7 @@ class ProtocolEntityTest extends TestCase
         $this->assertEquals($pdfUrl, $this->protocolEntity->getPdfUrl());
 
         // 测试时间属性
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
         
         $this->protocolEntity->setCreateTime($now);
         $this->assertEquals($now, $this->protocolEntity->getCreateTime());
@@ -101,8 +101,8 @@ class ProtocolEntityTest extends TestCase
         $type = ProtocolType::MEMBER_REGISTER;
         $required = true;
         $pdfUrl = 'https://example.com/terms.pdf';
-        $createTime = new \DateTime('2023-01-01 00:00:00');
-        $effectiveTime = new \DateTime('2023-01-02 00:00:00');
+        $createTime = new \DateTimeImmutable('2023-01-01 00:00:00');
+        $effectiveTime = new \DateTimeImmutable('2023-01-02 00:00:00');
 
         $mockProtocol = $this->getMockBuilder(ProtocolEntity::class)
             ->onlyMethods(['getId', 'getTitle', 'getVersion', 'getContent', 'getType', 'isRequired', 'getPdfUrl', 'getCreateTime', 'getEffectiveTime'])

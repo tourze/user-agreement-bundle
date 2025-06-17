@@ -35,7 +35,7 @@ class AgreeLogTest extends TestCase
         $this->assertEquals($valid, $this->agreeLog->isValid());
 
         // 测试时间属性
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
         
         $this->agreeLog->setCreateTime($now);
         $this->assertEquals($now, $this->agreeLog->getCreateTime());
