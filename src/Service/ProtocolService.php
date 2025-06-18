@@ -61,7 +61,7 @@ class ProtocolService
             'protocolId' => $protocol->getId(),
             'memberId' => strval($bizUser->getId()),
         ]);
-        if ($agreeLog) {
+        if ((bool) $agreeLog) {
             if ($agreeLog->isValid() !== $bool) {
                 $agreeLog->setValid($bool);
                 $this->entityManager->persist($agreeLog);

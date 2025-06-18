@@ -24,7 +24,7 @@ class RpcExecuteSubscriber
     public function beforeMethodApply(BeforeMethodApplyEvent $event): void
     {
         $attributes = (new \ReflectionClass($event->getMethod()))->getAttributes(IsAgreeTerms::class);
-        if (empty($attributes)) {
+        if ((bool) empty($attributes)) {
             return;
         }
 

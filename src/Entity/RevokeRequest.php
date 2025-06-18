@@ -4,6 +4,7 @@ namespace UserAgreementBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
@@ -13,25 +14,16 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 use UserAgreementBundle\Enum\RevokeType;
 use UserAgreementBundle\Repository\RevokeRequestRepository;
 
-#[AsPermission(title: '注销用户记录')]
-#[Deletable]
 #[ORM\Table(name: 'crm_revoke_request', options: ['comment' => '用户注销记录'])]
 #[ORM\Entity(repositoryClass: RevokeRequestRepository::class)]
-class RevokeRequest
+class RevokeRequest implements Stringable
 {
     use TimestampableAware;
 
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -39,40 +31,29 @@ class RevokeRequest
     private ?string $id = null;
 
     #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
     private ?string $createdBy = null;
 
     #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
     private ?string $updatedBy = null;
 
-    #[FormField]
     #[Filterable(label: '用户', inputWidth: 200)]
-    #[ListColumn(title: '用户')]
     #[Groups(['restful_read'])]
     #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
-    #[FormField]
-    #[ListColumn]
-    #[ORM\Column(type: Types::STRING, nullable: true, enumType: RevokeType::class, options: ['comment' => '注销类型'])]
     private ?RevokeType $type = null;
 
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => 'UnionID'])]
     private ?string $identity = null;
 
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像地址'])]
     private ?string $avatar = null;
 
     #[TrackColumn]
-    #[ORM\Column(type: Types::STRING, length: 100, nullable: true, options: ['comment' => '昵称'])]
     private ?string $nickName = null;
 
     #[TrackColumn]
-    #[ListColumn]
     #[ORM\Column(type: Types::STRING, length: 100, nullable: true, options: ['comment' => '备注信息'])]
     private ?string $remark = null;
 
@@ -81,11 +62,9 @@ class RevokeRequest
     private ?int $lockVersion = null;
 
     #[CreateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
     private ?string $createdFromIp = null;
 
     #[UpdateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
     private ?string $updatedFromIp = null;
 
     public function getId(): ?string
@@ -223,5 +202,10 @@ class RevokeRequest
         $this->updatedFromIp = $updatedFromIp;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->id;
     }
 }
