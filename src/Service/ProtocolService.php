@@ -27,15 +27,16 @@ class ProtocolService
             'type' => $type,
             'valid' => true,
         ], orderBy: ['id' => 'DESC']);
-        if (!$protocol) {
+        if ($protocol === null) {
             return false;
         }
 
+        // TODO: 需要根据实际 User 实体类型修改 getId() 方法调用
         $agreeLog = $this->agreeLogRepository->findOneBy([
             'protocolId' => $protocol->getId(),
-            'memberId' => strval($bizUser->getId()),
+            'memberId' => method_exists($bizUser, 'getId') ? strval($bizUser->getId()) : '',
         ]);
-        if ($agreeLog && $agreeLog->isValid()) {
+        if ($agreeLog !== null && $agreeLog->isValid()) {
             return true;
         }
 
@@ -49,7 +50,7 @@ class ProtocolService
             'type' => $type,
             'valid' => true,
         ], orderBy: ['id' => 'DESC']);
-        if (!$protocol) {
+        if ($protocol === null) {
             $this->logger->error('找不到指定的协议', [
                 'type' => $type,
             ]);
@@ -59,9 +60,9 @@ class ProtocolService
 
         $agreeLog = $this->agreeLogRepository->findOneBy([
             'protocolId' => $protocol->getId(),
-            'memberId' => strval($bizUser->getId()),
+            'memberId' => method_exists($bizUser, 'getId') ? strval($bizUser->getId()) : '',
         ]);
-        if ((bool) $agreeLog) {
+        if ($agreeLog !== null) {
             if ($agreeLog->isValid() !== $bool) {
                 $agreeLog->setValid($bool);
                 $this->entityManager->persist($agreeLog);
@@ -73,7 +74,7 @@ class ProtocolService
 
         $agreeLog = new AgreeLog();
         $agreeLog->setProtocolId($protocol->getId());
-        $agreeLog->setMemberId($bizUser->getId());
+        $agreeLog->setMemberId(method_exists($bizUser, 'getId') ? $bizUser->getId() : '');
         $agreeLog->setValid($bool);
         $this->entityManager->persist($agreeLog);
         $this->entityManager->flush();

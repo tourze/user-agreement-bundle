@@ -47,18 +47,19 @@ class ApiAgreeSystemProtocol extends LockableProcedure
             'id' => $this->id,
             'valid' => true,
         ]);
-        if (!$protocol) {
+        if ($protocol === null) {
             throw new ApiException('找不到协议');
         }
 
+        // TODO: 需要根据实际 User 实体类型修改 getId() 方法调用
         $log = $this->agreeLogRepository->findOneBy([
-            'memberId' => strval($member->getId()),
+            'memberId' => method_exists($member, 'getId') ? strval($member->getId()) : '',
             'protocolId' => $protocol->getId(),
         ]);
 
-        if (!$log) {
+        if ($log === null) {
             $log = new AgreeLog();
-            $log->setMemberId($member->getId());
+            $log->setMemberId(method_exists($member, 'getId') ? $member->getId() : '');
             $log->setProtocolId($protocol->getId());
             $log = $this->upsertManager->upsert($log);
             assert($log instanceof AgreeLog);

@@ -30,7 +30,7 @@ class RpcExecuteSubscriber
 
         // 一定要登录
         $user = $this->security->getUser();
-        if (!$user) {
+        if ($user === null) {
             throw new TermsNeedAgreeException();
         }
 

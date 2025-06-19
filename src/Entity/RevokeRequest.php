@@ -14,7 +14,6 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use UserAgreementBundle\Enum\RevokeType;
 use UserAgreementBundle\Repository\RevokeRequestRepository;
 
@@ -36,7 +35,7 @@ class RevokeRequest implements Stringable
     #[UpdatedByColumn]
     private ?string $updatedBy = null;
 
-    #[Filterable(label: '用户', inputWidth: 200)]
+    // TODO: 建议使用 \Tourze\DoctrineUserBundle\Traits\BlameableAware trait 来替代 createdBy/updatedBy 字段
     #[Groups(['restful_read'])]
     #[ORM\ManyToOne(targetEntity: UserInterface::class)]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]

@@ -30,12 +30,12 @@ class ApiGetSystemProtocolContent extends BaseProcedure
 
     public function execute(): array
     {
-        if (!$this->security->getUser()) {
+        if ($this->security->getUser() === null) {
             throw new ApiException('未登录用户不需要同意协议');
         }
 
         $type = ProtocolType::tryFrom($this->type);
-        if (!$type) {
+        if ($type === null) {
             throw new ApiException('找不到指定协议类型');
         }
 
@@ -43,18 +43,19 @@ class ApiGetSystemProtocolContent extends BaseProcedure
             'type' => $type,
             'valid' => true,
         ], orderBy: ['id' => 'DESC']);
-        if (!$protocol) {
+        if ($protocol === null) {
             throw new ApiException('找不到最新协议[1]');
         }
 
         $result = $protocol->retrieveApiArray();
         $result['has_agree'] = false;
-        if ($this->security->getUser()) {
+        $user = $this->security->getUser();
+        if ($user !== null) {
             $c = $this->agreeLogRepository->findOneBy([
                 'protocolId' => $protocol->getId(),
-                'memberId' => strval($this->security->getUser()->getId()),
+                'memberId' => method_exists($user, 'getId') ? strval($user->getId()) : '',
             ]);
-            $result['has_agree'] = $c && $c->getId() > 0;
+            $result['has_agree'] = $c !== null && $c->getId() > 0;
         }
 
         return $result;

@@ -41,9 +41,6 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '协议内容'])]
     private ?string $content = null;
 
-    /**
-     * @FileUpload()
-     */
     #[ORM\Column(length: 1000, nullable: true, options: ['comment' => '条款pdf文件'])]
     private ?string $pdfUrl = null;
 
@@ -55,7 +52,7 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null) {
             return '';
         }
 
