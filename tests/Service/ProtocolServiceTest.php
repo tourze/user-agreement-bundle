@@ -241,7 +241,7 @@ class ProtocolServiceTest extends TestCase
             ->with([
                 'type' => ProtocolType::MEMBER_REGISTER,
                 'valid' => true,
-            ], orderBy: ['id' => 'DESC'])
+            ], null, ['id' => 'DESC'])
             ->willReturn($mockProtocol);
 
         $this->agreeLogRepository
@@ -297,7 +297,7 @@ class ProtocolServiceTest extends TestCase
             ->with([
                 'type' => ProtocolType::MEMBER_REGISTER,
                 'valid' => true,
-            ], orderBy: ['id' => 'DESC'])
+            ], null, ['id' => 'DESC'])
             ->willReturn($mockProtocol);
 
         $this->agreeLogRepository
@@ -346,7 +346,7 @@ class ProtocolServiceTest extends TestCase
             ->with([
                 'type' => ProtocolType::MEMBER_REGISTER,
                 'valid' => true,
-            ], orderBy: ['id' => 'DESC'])
+            ], null, ['id' => 'DESC'])
             ->willReturn($mockProtocol);
 
         $this->agreeLogRepository
@@ -379,7 +379,7 @@ class ProtocolServiceTest extends TestCase
             ->with([
                 'type' => ProtocolType::MEMBER_REGISTER,
                 'valid' => true,
-            ], orderBy: ['id' => 'DESC'])
+            ], null, ['id' => 'DESC'])
             ->willReturn(null);
 
         // 应该记录错误日志
@@ -416,7 +416,7 @@ class ProtocolServiceTest extends TestCase
             ->with([
                 'type' => ProtocolType::MEMBER_REGISTER,
                 'valid' => true,
-            ], orderBy: ['id' => 'DESC'])
+            ], null, ['id' => 'DESC'])
             ->willReturn($mockProtocol);
 
         $this->agreeLogRepository

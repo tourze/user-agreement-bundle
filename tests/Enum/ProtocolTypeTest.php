@@ -52,7 +52,6 @@ class ProtocolTypeTest extends TestCase
     {
         // 验证SelectTrait相关功能
         $item = ProtocolType::MEMBER_REGISTER;
-        $this->assertIsArray($item->toArray());
         $this->assertEquals([
             'value' => 'member_register',
             'label' => '用户注册协议'

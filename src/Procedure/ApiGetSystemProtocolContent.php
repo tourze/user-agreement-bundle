@@ -42,7 +42,7 @@ class ApiGetSystemProtocolContent extends BaseProcedure
         $protocol = $this->protocolEntityRepository->findOneBy([
             'type' => $type,
             'valid' => true,
-        ], orderBy: ['id' => 'DESC']);
+        ], ['id' => 'DESC']);
         if ($protocol === null) {
             throw new ApiException('找不到最新协议[1]');
         }
@@ -50,13 +50,11 @@ class ApiGetSystemProtocolContent extends BaseProcedure
         $result = $protocol->retrieveApiArray();
         $result['has_agree'] = false;
         $user = $this->security->getUser();
-        if ($user !== null) {
-            $c = $this->agreeLogRepository->findOneBy([
-                'protocolId' => $protocol->getId(),
-                'memberId' => method_exists($user, 'getId') ? strval($user->getId()) : '',
-            ]);
-            $result['has_agree'] = $c !== null && $c->getId() > 0;
-        }
+        $c = $this->agreeLogRepository->findOneBy([
+            'protocolId' => $protocol->getId(),
+            'memberId' => method_exists($user, 'getId') ? strval($user->getId()) : '',
+        ]);
+        $result['has_agree'] = $c !== null && $c->getId() > 0;
 
         return $result;
     }

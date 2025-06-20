@@ -26,7 +26,7 @@ class ProtocolService
         $protocol = $this->protocolEntityRepository->findOneBy([
             'type' => $type,
             'valid' => true,
-        ], orderBy: ['id' => 'DESC']);
+        ], ['id' => 'DESC']);
         if ($protocol === null) {
             return false;
         }
@@ -49,7 +49,7 @@ class ProtocolService
         $protocol = $this->protocolEntityRepository->findOneBy([
             'type' => $type,
             'valid' => true,
-        ], orderBy: ['id' => 'DESC']);
+        ], ['id' => 'DESC']);
         if ($protocol === null) {
             $this->logger->error('找不到指定的协议', [
                 'type' => $type,
