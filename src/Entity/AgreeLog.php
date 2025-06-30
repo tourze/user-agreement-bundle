@@ -6,7 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 
@@ -16,11 +16,7 @@ use UserAgreementBundle\Repository\AgreeLogRepository;
 class AgreeLog implements Stringable
 {
     use TimestampableAware;
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
+    use SnowflakeKeyAware;
 
     #[IndexColumn]
     private ?string $protocolId = null;
@@ -31,10 +27,6 @@ class AgreeLog implements Stringable
     #[ORM\Column(type: Types::BOOLEAN, nullable: false, options: ['comment' => '同意', 'default' => 1])]
     private bool $valid = true;
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
 
     public function getProtocolId(): ?string
     {

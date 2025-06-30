@@ -13,12 +13,12 @@ use UserAgreementBundle\Enum\ProtocolType;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
 
-#[MethodTag('基础能力')]
-#[MethodDoc('获取协议内容')]
-#[MethodExpose('apiGetSystemProtocolContent')]
+#[MethodTag(name: '基础能力')]
+#[MethodDoc(summary: '获取协议内容')]
+#[MethodExpose(method: 'apiGetSystemProtocolContent')]
 class ApiGetSystemProtocolContent extends BaseProcedure
 {
-    #[MethodParam('协议类型')]
+    #[MethodParam(description: '协议类型')]
     public string $type;
 
     public function __construct(

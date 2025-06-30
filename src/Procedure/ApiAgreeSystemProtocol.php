@@ -20,14 +20,14 @@ use UserAgreementBundle\Event\AgreeProtocolEvent;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
 
-#[MethodTag('基础能力')]
-#[MethodDoc('同意协议')]
-#[MethodExpose('apiAgreeSystemProtocol')]
-#[IsGranted('IS_AUTHENTICATED_FULLY')]
+#[MethodTag(name: '基础能力')]
+#[MethodDoc(summary: '同意协议')]
+#[MethodExpose(method: 'apiAgreeSystemProtocol')]
+#[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
 #[Log]
 class ApiAgreeSystemProtocol extends LockableProcedure
 {
-    #[MethodParam('协议ID')]
+    #[MethodParam(description: '协议ID')]
     public string $id;
 
     public function __construct(

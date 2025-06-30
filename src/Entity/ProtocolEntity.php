@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use UserAgreementBundle\Enum\ProtocolType;
@@ -18,12 +18,7 @@ use UserAgreementBundle\Repository\ProtocolEntityRepository;
 class ProtocolEntity implements \Stringable, ApiArrayInterface
 {
     use TimestampableAware;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
+    use SnowflakeKeyAware;
 
     #[TrackColumn]
     private ?bool $valid = false;
@@ -59,10 +54,6 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return "{$this->getTitle()}{$this->getVersion()}";
     }
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
 
     public function isValid(): ?bool
     {
