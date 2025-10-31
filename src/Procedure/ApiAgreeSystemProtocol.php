@@ -2,10 +2,10 @@
 
 namespace UserAgreementBundle\Procedure;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Tourze\DoctrineUpsertBundle\Service\UpsertManager;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Attribute\MethodParam;
@@ -19,8 +19,9 @@ use UserAgreementBundle\Entity\AgreeLog;
 use UserAgreementBundle\Event\AgreeProtocolEvent;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
+use UserAgreementBundle\Service\MemberService;
 
-#[MethodTag(name: '基础能力')]
+#[MethodTag(name: '用户协议')]
 #[MethodDoc(summary: '同意协议')]
 #[MethodExpose(method: 'apiAgreeSystemProtocol')]
 #[IsGranted(attribute: 'IS_AUTHENTICATED_FULLY')]
@@ -33,8 +34,9 @@ class ApiAgreeSystemProtocol extends LockableProcedure
     public function __construct(
         private readonly ProtocolEntityRepository $protocolEntityRepository,
         private readonly AgreeLogRepository $agreeLogRepository,
-        private readonly UpsertManager $upsertManager,
+        private readonly EntityManagerInterface $entityManager,
         private readonly Security $security,
+        private readonly MemberService $memberService,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
@@ -42,30 +44,37 @@ class ApiAgreeSystemProtocol extends LockableProcedure
     public function execute(): array
     {
         $member = $this->security->getUser();
+        if (null === $member) {
+            throw new ApiException('用户未登录');
+        }
 
         $protocol = $this->protocolEntityRepository->findOneBy([
             'id' => $this->id,
             'valid' => true,
         ]);
-        if ($protocol === null) {
+        if (null === $protocol) {
             throw new ApiException('找不到协议');
         }
 
-        // TODO: 需要根据实际 User 实体类型修改 getId() 方法调用
+        $mId = $this->memberService->extractMemberId($member);
+
         $log = $this->agreeLogRepository->findOneBy([
-            'memberId' => method_exists($member, 'getId') ? strval($member->getId()) : '',
+            'memberId' => $mId,
             'protocolId' => $protocol->getId(),
         ]);
 
-        if ($log === null) {
+        if (null === $log) {
             $log = new AgreeLog();
-            $log->setMemberId(method_exists($member, 'getId') ? $member->getId() : '');
-            $log->setProtocolId($protocol->getId());
-            $log = $this->upsertManager->upsert($log);
-            assert($log instanceof AgreeLog);
+            $log->setMemberId($mId);
+            $log->setProtocolId((string) $protocol->getId());
+            $this->entityManager->persist($log);
+            $this->entityManager->flush();
 
             $event = new AgreeProtocolEvent();
-            $event->setSender($this->security->getUser());
+            $sender = $this->security->getUser();
+            if (null !== $sender) {
+                $event->setSender($sender);
+            }
             $event->setReceiver(SystemUser::instance());
             $event->setMessage(sprintf('同意《%s》协议', $protocol));
             $event->setProtocol($protocol);
@@ -78,9 +87,22 @@ class ApiAgreeSystemProtocol extends LockableProcedure
 
     protected function getIdempotentCacheKey(JsonRpcRequest $request): ?string
     {
-        return "ApiAgreeSystemProtocol-{$request->getParams()->get('id')}-{$this->security->getUser()->getUserIdentifier()}";
+        $user = $this->security->getUser();
+        if (null === $user) {
+            return null;
+        }
+
+        $params = $request->getParams();
+        if (null === $params) {
+            return null;
+        }
+
+        return "ApiAgreeSystemProtocol-{$params->get('id')}-{$user->getUserIdentifier()}";
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getSuccessResult(): array
     {
         return [

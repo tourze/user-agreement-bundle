@@ -2,12 +2,25 @@
 
 namespace UserAgreementBundle\Exception;
 
-use Tourze\JsonRPC\Core\Exception\ApiException;
-
-class TermsNeedAgreeException extends ApiException
+class TermsNeedAgreeException extends \RuntimeException
 {
-    public function __construct($mixed = '', array $data = [], ?\Throwable $previous = null)
+    /** @var array<string, mixed> */
+    private array $data;
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function __construct(string $message = '', array $data = [], ?\Throwable $previous = null)
     {
-        parent::__construct($mixed, -988, $data, $previous);
+        $this->data = $data;
+        parent::__construct($message, -988, $previous);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 }

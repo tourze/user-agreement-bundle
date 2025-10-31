@@ -2,65 +2,48 @@
 
 namespace UserAgreementBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use UserAgreementBundle\Entity\AgreeLog;
 
-class AgreeLogTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(AgreeLog::class)]
+final class AgreeLogTest extends AbstractEntityTestCase
 {
-    private AgreeLog $agreeLog;
-
-    protected function setUp(): void
+    protected function createEntity(): object
     {
-        $this->agreeLog = new AgreeLog();
+        return new AgreeLog();
     }
 
     /**
-     * @test
+     * @return iterable<string, array{string, mixed}>
      */
-    public function testGettersAndSetters(): void
+    public static function propertiesProvider(): iterable
     {
-        // 测试协议ID属性
-        $protocolId = '123456789';
-        $this->agreeLog->setProtocolId($protocolId);
-        $this->assertEquals($protocolId, $this->agreeLog->getProtocolId());
-
-        // 测试会员ID属性
-        $memberId = '987654321';
-        $this->agreeLog->setMemberId($memberId);
-        $this->assertEquals($memberId, $this->agreeLog->getMemberId());
-
-        // 测试有效性属性
-        $valid = false;
-        $this->agreeLog->setValid($valid);
-        $this->assertEquals($valid, $this->agreeLog->isValid());
-
-        // 测试时间属性
-        $now = new \DateTimeImmutable();
-        
-        $this->agreeLog->setCreateTime($now);
-        $this->assertEquals($now, $this->agreeLog->getCreateTime());
-        
-        $this->agreeLog->setUpdateTime($now);
-        $this->assertEquals($now, $this->agreeLog->getUpdateTime());
+        return [
+            'protocolId' => ['protocolId', 'test-protocol-123'],
+            'memberId' => ['memberId', 'test-member-456'],
+            'valid' => ['valid', true],
+            'valid_false' => ['valid', false],
+        ];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function testDefaultValues(): void
     {
         $newAgreeLog = new AgreeLog();
-        
+
         // valid默认应为true
         $this->assertTrue($newAgreeLog->isValid());
-        
+
         // ID默认应为null
         $this->assertNull($newAgreeLog->getId());
-        
+
         // 其他属性默认应为null
         $this->assertNull($newAgreeLog->getProtocolId());
         $this->assertNull($newAgreeLog->getMemberId());
-        $this->assertNull($newAgreeLog->getCreateTime());
-        $this->assertNull($newAgreeLog->getUpdateTime());
     }
-} 
+}

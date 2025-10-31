@@ -3,20 +3,25 @@
 namespace UserAgreementBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Tourze\DoctrineUpsertBundle\Service\UpsertManager;
 use Tourze\Symfony\AopAsyncBundle\Attribute\Async;
 use UserAgreementBundle\Entity\AgreeLog;
 use UserAgreementBundle\Enum\ProtocolType;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
 
+#[WithMonologChannel(channel: 'user_agreement')]
 class ProtocolService
 {
     public function __construct(
         private readonly ProtocolEntityRepository $protocolEntityRepository,
         private readonly AgreeLogRepository $agreeLogRepository,
         private readonly LoggerInterface $logger,
+        private readonly MemberService $memberService,
+        private readonly UpsertManager $upsertManager,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -27,16 +32,15 @@ class ProtocolService
             'type' => $type,
             'valid' => true,
         ], ['id' => 'DESC']);
-        if ($protocol === null) {
+        if (null === $protocol) {
             return false;
         }
 
-        // TODO: 需要根据实际 User 实体类型修改 getId() 方法调用
         $agreeLog = $this->agreeLogRepository->findOneBy([
             'protocolId' => $protocol->getId(),
-            'memberId' => method_exists($bizUser, 'getId') ? strval($bizUser->getId()) : '',
+            'memberId' => $this->memberService->extractMemberId($bizUser),
         ]);
-        if ($agreeLog !== null && $agreeLog->isValid()) {
+        if (null !== $agreeLog && $agreeLog->isValid()) {
             return true;
         }
 
@@ -50,7 +54,7 @@ class ProtocolService
             'type' => $type,
             'valid' => true,
         ], ['id' => 'DESC']);
-        if ($protocol === null) {
+        if (null === $protocol) {
             $this->logger->error('找不到指定的协议', [
                 'type' => $type,
             ]);
@@ -58,11 +62,13 @@ class ProtocolService
             return;
         }
 
+        $memberId = $this->memberService->extractMemberId($bizUser);
+
         $agreeLog = $this->agreeLogRepository->findOneBy([
             'protocolId' => $protocol->getId(),
-            'memberId' => method_exists($bizUser, 'getId') ? strval($bizUser->getId()) : '',
+            'memberId' => $memberId,
         ]);
-        if ($agreeLog !== null) {
+        if (null !== $agreeLog) {
             if ($agreeLog->isValid() !== $bool) {
                 $agreeLog->setValid($bool);
                 $this->entityManager->persist($agreeLog);
@@ -73,10 +79,9 @@ class ProtocolService
         }
 
         $agreeLog = new AgreeLog();
-        $agreeLog->setProtocolId($protocol->getId());
-        $agreeLog->setMemberId(method_exists($bizUser, 'getId') ? $bizUser->getId() : '');
+        $agreeLog->setProtocolId((string) $protocol->getId());
+        $agreeLog->setMemberId($memberId);
         $agreeLog->setValid($bool);
-        $this->entityManager->persist($agreeLog);
-        $this->entityManager->flush();
+        $this->upsertManager->upsert($agreeLog);
     }
 }

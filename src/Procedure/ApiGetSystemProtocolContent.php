@@ -12,8 +12,9 @@ use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use UserAgreementBundle\Enum\ProtocolType;
 use UserAgreementBundle\Repository\AgreeLogRepository;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
+use UserAgreementBundle\Service\MemberService;
 
-#[MethodTag(name: '基础能力')]
+#[MethodTag(name: '用户协议')]
 #[MethodDoc(summary: '获取协议内容')]
 #[MethodExpose(method: 'apiGetSystemProtocolContent')]
 class ApiGetSystemProtocolContent extends BaseProcedure
@@ -25,17 +26,18 @@ class ApiGetSystemProtocolContent extends BaseProcedure
         private readonly Security $security,
         private readonly ProtocolEntityRepository $protocolEntityRepository,
         private readonly AgreeLogRepository $agreeLogRepository,
+        private readonly MemberService $memberService,
     ) {
     }
 
     public function execute(): array
     {
-        if ($this->security->getUser() === null) {
+        if (null === $this->security->getUser()) {
             throw new ApiException('未登录用户不需要同意协议');
         }
 
         $type = ProtocolType::tryFrom($this->type);
-        if ($type === null) {
+        if (null === $type) {
             throw new ApiException('找不到指定协议类型');
         }
 
@@ -43,18 +45,17 @@ class ApiGetSystemProtocolContent extends BaseProcedure
             'type' => $type,
             'valid' => true,
         ], ['id' => 'DESC']);
-        if ($protocol === null) {
+        if (null === $protocol) {
             throw new ApiException('找不到最新协议[1]');
         }
 
         $result = $protocol->retrieveApiArray();
-        $result['has_agree'] = false;
         $user = $this->security->getUser();
         $c = $this->agreeLogRepository->findOneBy([
             'protocolId' => $protocol->getId(),
-            'memberId' => method_exists($user, 'getId') ? strval($user->getId()) : '',
+            'memberId' => $this->memberService->extractMemberId($user),
         ]);
-        $result['has_agree'] = $c !== null && $c->getId() > 0;
+        $result['has_agree'] = null !== $c && $c->getId() > 0;
 
         return $result;
     }

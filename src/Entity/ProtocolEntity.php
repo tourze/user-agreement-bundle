@@ -2,9 +2,9 @@
 
 namespace UserAgreementBundle\Entity;
 
-use AntdCpBundle\Builder\Field\FileUpload;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
@@ -13,6 +13,9 @@ use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use UserAgreementBundle\Enum\ProtocolType;
 use UserAgreementBundle\Repository\ProtocolEntityRepository;
 
+/**
+ * @implements ApiArrayInterface<string, mixed>
+ */
 #[ORM\Entity(repositoryClass: ProtocolEntityRepository::class)]
 #[ORM\Table(name: 'ims_member_protocol_entity', options: ['comment' => '协议管理'])]
 class ProtocolEntity implements \Stringable, ApiArrayInterface
@@ -21,50 +24,64 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
     use SnowflakeKeyAware;
 
     #[TrackColumn]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false, options: ['comment' => '是否有效', 'default' => false])]
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
     private ?bool $valid = false;
 
     #[IndexColumn]
     #[ORM\Column(length: 100, enumType: ProtocolType::class, options: ['comment' => '类型'])]
+    #[Assert\NotNull]
+    #[Assert\Choice(callback: [ProtocolType::class, 'cases'])]
     private ?ProtocolType $type = null;
 
     #[ORM\Column(length: 100, options: ['comment' => '协议名'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private ?string $title = null;
 
     #[ORM\Column(length: 60, options: ['comment' => '版本'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 60)]
     private ?string $version = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '协议内容'])]
+    #[Assert\Length(max: 65535)]
     private ?string $content = null;
 
     #[ORM\Column(length: 1000, nullable: true, options: ['comment' => '条款pdf文件'])]
+    #[Assert\Length(max: 1000)]
+    #[Assert\Url]
     private ?string $pdfUrl = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '是否必需'])]
+    #[Assert\Type(type: 'bool')]
     private ?bool $required = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '生效时间'])]
+    #[Assert\DateTime]
     private ?\DateTimeInterface $effectiveTime = null;
 
     public function __toString(): string
     {
-        if ($this->getId() === null) {
+        if (null === $this->getId()) {
             return '';
         }
 
-        return "{$this->getTitle()}{$this->getVersion()}";
-    }
+        $title = $this->getTitle() ?? '';
+        $version = $this->getVersion() ?? '';
 
+        return "{$title}{$version}";
+    }
 
     public function isValid(): ?bool
     {
         return $this->valid;
     }
 
-    public function setValid(?bool $valid): self
+    public function setValid(?bool $valid): void
     {
         $this->valid = $valid;
-
-        return $this;
     }
 
     public function getType(): ?ProtocolType
@@ -72,11 +89,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->type;
     }
 
-    public function setType(ProtocolType $type): self
+    public function setType(ProtocolType $type): void
     {
         $this->type = $type;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -84,11 +99,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(string $title): void
     {
         $this->title = $title;
-
-        return $this;
     }
 
     public function getVersion(): ?string
@@ -96,11 +109,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->version;
     }
 
-    public function setVersion(string $version): self
+    public function setVersion(string $version): void
     {
         $this->version = $version;
-
-        return $this;
     }
 
     public function getContent(): ?string
@@ -108,11 +119,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->content;
     }
 
-    public function setContent(?string $content): self
+    public function setContent(?string $content): void
     {
         $this->content = $content;
-
-        return $this;
     }
 
     public function isRequired(): ?bool
@@ -120,11 +129,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->required;
     }
 
-    public function setRequired(?bool $required): self
+    public function setRequired(?bool $required): void
     {
         $this->required = $required;
-
-        return $this;
     }
 
     public function getEffectiveTime(): ?\DateTimeInterface
@@ -132,11 +139,9 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->effectiveTime;
     }
 
-    public function setEffectiveTime(?\DateTimeInterface $effectiveTime): self
+    public function setEffectiveTime(?\DateTimeInterface $effectiveTime): void
     {
         $this->effectiveTime = $effectiveTime;
-
-        return $this;
     }
 
     public function getPdfUrl(): ?string
@@ -144,13 +149,14 @@ class ProtocolEntity implements \Stringable, ApiArrayInterface
         return $this->pdfUrl;
     }
 
-    public function setPdfUrl(?string $pdfUrl): static
+    public function setPdfUrl(?string $pdfUrl): void
     {
         $this->pdfUrl = $pdfUrl;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function retrieveApiArray(): array
     {
         return [

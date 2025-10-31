@@ -23,14 +23,21 @@ class RpcExecuteSubscriber
     #[AsEventListener]
     public function beforeMethodApply(BeforeMethodApplyEvent $event): void
     {
-        $attributes = (new \ReflectionClass($event->getMethod()))->getAttributes(IsAgreeTerms::class);
-        if ((bool) empty($attributes)) {
+        $classReflection = new \ReflectionClass($event->getMethod());
+        $attributes = $classReflection->getAttributes(IsAgreeTerms::class);
+
+        // Check class-level attributes first, then method-level
+        if (0 === count($attributes)) {
+            $methodReflection = new \ReflectionMethod($event->getMethod(), '__invoke');
+            $attributes = $methodReflection->getAttributes(IsAgreeTerms::class);
+        }
+        if (0 === count($attributes)) {
             return;
         }
 
         // 一定要登录
         $user = $this->security->getUser();
-        if ($user === null) {
+        if (null === $user) {
             throw new TermsNeedAgreeException();
         }
 

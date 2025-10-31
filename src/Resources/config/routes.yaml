@@ -1,3 +1,0 @@
-user_agreement_controllers:
-  resource: '../../Controller/'
-  type: attribute
