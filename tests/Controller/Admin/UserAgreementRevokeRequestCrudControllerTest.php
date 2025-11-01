@@ -68,8 +68,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testIndexPageAccessibleWithValidRole(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $client->request('GET', '/admin/user-agreement/revoke-request');
 
@@ -92,8 +91,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testNewRevokeRequestFormValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $client->request('POST', '/admin/user-agreement/revoke-request/new', [
             'RevokeRequest' => [
@@ -108,8 +106,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testCreateRevokeRequestWithValidData(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $client->request('POST', '/admin/user-agreement/revoke-request/new', [
             'RevokeRequest' => [
@@ -126,8 +123,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testSearchFunctionality(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $client->request('GET', '/admin/user-agreement/revoke-request', [
             'query' => 'test@example.com',
@@ -139,8 +135,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testFilterFunctionality(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 测试过滤器的基本功能 - 简化测试避免EasyAdmin版本兼容性问题
         $client->request('GET', '/admin/user-agreement/revoke-request');
@@ -151,8 +146,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testCustomActionsAreNotFound(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 测试 approve action 不存在
         $client->catchExceptions(false);
@@ -177,8 +171,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testDeleteActionIsNotSupported(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 在测试中捕获异常
         $client->catchExceptions(false);
@@ -195,8 +188,7 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
     #[Test]
     public function testFileUploadValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 在测试环境中，为文件上传创建必要的目录
         $kernel = $client->getKernel();
