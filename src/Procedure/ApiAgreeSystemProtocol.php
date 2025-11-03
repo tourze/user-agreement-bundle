@@ -97,7 +97,11 @@ class ApiAgreeSystemProtocol extends LockableProcedure
             return null;
         }
 
-        return "ApiAgreeSystemProtocol-{$params->get('id')}-{$user->getUserIdentifier()}";
+        $id = $params->get('id');
+        assert(is_string($id) || is_int($id), 'Protocol ID must be string or int');
+        $protocolId = (string) $id;
+
+        return "ApiAgreeSystemProtocol-{$protocolId}-{$user->getUserIdentifier()}";
     }
 
     /**

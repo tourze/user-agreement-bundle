@@ -2,7 +2,6 @@
 
 namespace UserAgreementBundle\Tests\Service;
 
-use BizUserBundle\Entity\BizUser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
@@ -29,15 +28,20 @@ final class MemberServiceTest extends AbstractIntegrationTestCase
     {
         $user = $this->createNormalUser('fallback@example.com');
 
-        // BizUser has getId() method that returns integer ID
+        // User implementation has getId() method that returns integer ID
         $memberId = $this->memberService->extractMemberId($user);
 
-        // Since BizUser has getId() method, it should return the string version of ID
+        // Since user has getId() method, it should return the string version of ID
         $this->assertIsNumeric($memberId);
 
-        // Cast user to BizUser to access getId method
-        $this->assertInstanceOf(BizUser::class, $user);
-        $this->assertEquals((string) $user->getId(), $memberId);
+        // Verify user implements UserInterface and has getId method
+        $this->assertInstanceOf(UserInterface::class, $user);
+        $this->assertTrue(method_exists($user, 'getId'), 'User must have getId() method');
+
+        // Use reflection to safely access getId() method
+        $reflection = new \ReflectionMethod($user, 'getId');
+        $userId = $reflection->invoke($user);
+        $this->assertEquals((string) $userId, $memberId);
     }
 
     #[Test]

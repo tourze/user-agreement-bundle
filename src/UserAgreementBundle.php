@@ -14,6 +14,7 @@ use Tourze\DoctrineTrackBundle\DoctrineTrackBundle;
 use Tourze\DoctrineUpsertBundle\DoctrineUpsertBundle;
 use Tourze\JsonRPCLockBundle\JsonRPCLockBundle;
 use Tourze\JsonRPCSecurityBundle\JsonRPCSecurityBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class UserAgreementBundle extends Bundle implements BundleDependencyInterface
 {
@@ -30,6 +31,7 @@ class UserAgreementBundle extends Bundle implements BundleDependencyInterface
             SecurityBundle::class => ['all' => true],
             JsonRPCLockBundle::class => ['all' => true],
             JsonRPCSecurityBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
