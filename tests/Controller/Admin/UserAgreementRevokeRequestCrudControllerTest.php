@@ -5,7 +5,6 @@ namespace UserAgreementBundle\Tests\Controller\Admin;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -19,27 +18,7 @@ use UserAgreementBundle\Controller\Admin\UserAgreementRevokeRequestCrudControlle
 #[RunTestsInSeparateProcesses]
 final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
-    /**
-     * 覆盖父类方法，修复客户端设置问题
-     *
-     * AbstractEasyAdminControllerTestCase::testUnauthenticatedAccessDenied() 中的
-     * createClientWithDatabase() 没有调用 self::getClient($client) 设置静态客户端实例，
-     * 导致 Symfony 断言系统无法获取客户端，抛出 "A client must be set" 错误。
-     *
-     * @param array $options 选项
-     * @param array $server 服务器参数
-     * @return KernelBrowser 正确设置的客户端实例
-     * @phpstan-ignore-next-line missingType.iterableValue
-     */
-    protected static function createClientWithDatabase(array $options = [], array $server = []): KernelBrowser
-    {
-        $client = parent::createClientWithDatabase($options, $server);
-        self::getClient($client); // 设置静态客户端实例，确保 Symfony 断言可以正常工作
-
-        return $client;
-    }
-
-    protected function onSetUp(): void
+    protected function afterEasyAdminSetUp(): void
     {
         parent::onSetUp();
 
