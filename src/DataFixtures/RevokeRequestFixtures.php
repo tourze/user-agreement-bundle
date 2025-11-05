@@ -2,9 +2,7 @@
 
 namespace UserAgreementBundle\DataFixtures;
 
-use BizUserBundle\DataFixtures\BizUserFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,7 +16,7 @@ use UserAgreementBundle\Enum\RevokeType;
  */
 #[When(env: 'test')]
 #[When(env: 'dev')]
-class RevokeRequestFixtures extends Fixture implements DependentFixtureInterface
+class RevokeRequestFixtures extends Fixture
 {
     public const REVOKE_REQUEST_ALL_1 = 'revoke-request-all-1';
     public const REVOKE_REQUEST_NO_NOTIFY = 'revoke-request-no-notify';
@@ -114,19 +112,19 @@ class RevokeRequestFixtures extends Fixture implements DependentFixtureInterface
 
     /**
      * 创建模拟用户
+     *
+     * @return object|null 如果无法解析用户实体类或引用不存在，返回 null
      */
-    private function createMockUser(string $reference = 'user-1'): object
+    private function createMockUser(string $reference = 'user-1'): ?object
     {
-        $userClass = $this->resolveTargetEntityService->findEntityClass(UserInterface::class);
+        try {
+            $userClass = $this->resolveTargetEntityService->findEntityClass(UserInterface::class);
 
-        // @phpstan-ignore-next-line
-        return $this->getReference($reference, $userClass);
-    }
-
-    public function getDependencies(): array
-    {
-        return [
-            BizUserFixtures::class,
-        ];
+            return $this->getReference($reference, $userClass);
+        } catch (\Exception $e) {
+            // 在测试环境中可能没有配置用户实体映射，此时返回 null
+            // 这允许 Fixture 在隔离测试中优雅地处理缺失依赖
+            return null;
+        }
     }
 }

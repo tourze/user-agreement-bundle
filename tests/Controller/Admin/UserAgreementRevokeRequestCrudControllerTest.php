@@ -20,11 +20,8 @@ final class UserAgreementRevokeRequestCrudControllerTest extends AbstractEasyAdm
 {
     protected function afterEasyAdminSetUp(): void
     {
-        parent::onSetUp();
-
-        // 创建上传目录
-        $client = self::createClientWithDatabase();
-        $uploadsDir = $client->getKernel()->getProjectDir() . '/public/uploads/revoke';
+        // 创建上传目录（不需要创建 client，直接使用已有的 kernel）
+        $uploadsDir = self::getContainer()->getParameter('kernel.project_dir') . '/public/uploads/revoke';
 
         if (!is_dir($uploadsDir)) {
             mkdir($uploadsDir, 0o777, true);
