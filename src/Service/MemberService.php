@@ -4,7 +4,7 @@ namespace UserAgreementBundle\Service;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class MemberService
+final class MemberService
 {
     public function extractMemberId(UserInterface $user): string
     {
