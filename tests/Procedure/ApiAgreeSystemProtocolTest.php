@@ -6,8 +6,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Tourze\JsonRPC\Core\Exception\ApiException;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 use UserAgreementBundle\Procedure\ApiAgreeSystemProtocol;
 
 /**
@@ -38,6 +38,10 @@ final class ApiAgreeSystemProtocolTest extends AbstractProcedureTestCase
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('用户未登录');
 
-        $procedure->execute();
+        // 创建参数对象，提供必需的协议ID
+        $param = new \UserAgreementBundle\Param\ApiAgreeSystemProtocolParam();
+        $param->id = 'test-protocol-id';
+
+        $procedure->execute($param);
     }
 }

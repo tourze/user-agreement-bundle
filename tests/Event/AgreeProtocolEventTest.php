@@ -28,13 +28,10 @@ final class AgreeProtocolEventTest extends AbstractEventTestCase
     #[Test]
     public function testProtocolProperty(): void
     {
-        /*
-         * 使用具体类 ProtocolEntity 的理由：
-         * 1. ProtocolEntity 是 Doctrine 实体类，没有提供接口
-         * 2. 事件测试需要验证实体的传递和获取功能
-         * 3. 这是业务事件测试，需要模拟实体行为
-         */
-        $protocol = $this->createMock(ProtocolEntity::class);
+        // 使用真实的 ProtocolEntity 对象而不是 Mock
+        $protocol = new ProtocolEntity();
+        $protocol->setTitle('Test Protocol');
+        $protocol->setVersion('1.0');
 
         $this->event->setProtocol($protocol);
         $this->assertEquals($protocol, $this->event->getProtocol());
@@ -43,13 +40,10 @@ final class AgreeProtocolEventTest extends AbstractEventTestCase
     #[Test]
     public function testAgreeLogProperty(): void
     {
-        /*
-         * 使用具体类 AgreeLog 的理由：
-         * 1. AgreeLog 是 Doctrine 实体类，没有提供接口
-         * 2. 事件测试需要验证实体的传递和获取功能
-         * 3. 这是业务事件测试，需要模拟实体行为
-         */
-        $agreeLog = $this->createMock(AgreeLog::class);
+        // 使用真实的 AgreeLog 对象而不是 Mock
+        $agreeLog = new AgreeLog();
+        $agreeLog->setProtocolId('protocol-123');
+        $agreeLog->setMemberId('member-456');
 
         $this->event->setAgreeLog($agreeLog);
         $this->assertEquals($agreeLog, $this->event->getAgreeLog());
@@ -67,20 +61,14 @@ final class AgreeProtocolEventTest extends AbstractEventTestCase
     #[Test]
     public function testSetAndGetBothProperties(): void
     {
-        /*
-         * 使用具体类的理由：
-         * 1. ProtocolEntity 和 AgreeLog 都是 Doctrine 实体类，没有提供接口
-         * 2. 事件测试需要验证实体的传递和获取功能
-         * 3. 这是业务事件测试，需要模拟实体行为
-         */
-        $protocol = $this->createMock(ProtocolEntity::class);
-        /*
-         * 使用具体类 AgreeLog 的理由：
-         * 1. AgreeLog 是 Doctrine 实体类，没有提供标准接口
-         * 2. 测试需要验证事件中实体的传递和获取功能
-         * 3. 作为业务实体，使用具体类进行 Mock 是合理的测试方式
-         */
-        $agreeLog = $this->createMock(AgreeLog::class);
+        // 使用真实的实体对象而不是 Mock
+        $protocol = new ProtocolEntity();
+        $protocol->setTitle('Test Protocol');
+        $protocol->setVersion('1.0');
+
+        $agreeLog = new AgreeLog();
+        $agreeLog->setProtocolId('protocol-123');
+        $agreeLog->setMemberId('member-456');
 
         $this->event->setProtocol($protocol);
         $this->event->setAgreeLog($agreeLog);

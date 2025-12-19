@@ -47,9 +47,33 @@ final class MemberServiceTest extends AbstractIntegrationTestCase
     #[Test]
     public function testExtractMemberIdFallsBackToUserIdentifier(): void
     {
-        // Create a mock user without getId method to test fallback
-        $user = $this->createMock(UserInterface::class);
-        $user->method('getUserIdentifier')->willReturn('user@example.com');
+        // Create a user without getId method to test fallback using anonymous class
+        $user = new class implements UserInterface {
+            public function getRoles(): array
+            {
+                return ['ROLE_USER'];
+            }
+
+            public function getPassword(): ?string
+            {
+                return null;
+            }
+
+            public function getSalt(): ?string
+            {
+                return null;
+            }
+
+            public function eraseCredentials(): void
+            {
+                // No credentials to erase
+            }
+
+            public function getUserIdentifier(): string
+            {
+                return 'user@example.com';
+            }
+        };
 
         $memberId = $this->memberService->extractMemberId($user);
         $this->assertEquals('user@example.com', $memberId);

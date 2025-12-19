@@ -11,7 +11,7 @@ use UserAgreementBundle\Entity\ProtocolEntity;
  * @extends ServiceEntityRepository<ProtocolEntity>
  */
 #[AsRepository(entityClass: ProtocolEntity::class)]
-class ProtocolEntityRepository extends ServiceEntityRepository
+final class ProtocolEntityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

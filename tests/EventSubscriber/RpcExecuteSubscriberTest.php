@@ -5,9 +5,12 @@ namespace UserAgreementBundle\Tests\EventSubscriber;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Contracts\RpcResultInterface;
 use Tourze\JsonRPC\Core\Domain\JsonRpcMethodInterface;
 use Tourze\JsonRPC\Core\Event\BeforeMethodApplyEvent;
 use Tourze\JsonRPC\Core\Model\JsonRpcRequest;
+use Tourze\JsonRPC\Core\Result\EmptyResult;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractEventSubscriberTestCase;
 use UserAgreementBundle\Attribute\IsAgreeTerms;
 use UserAgreementBundle\Enum\ProtocolType;
@@ -32,15 +35,15 @@ final class RpcExecuteSubscriberTest extends AbstractEventSubscriberTestCase
         $subscriber = self::getService(RpcExecuteSubscriber::class);
 
         $methodObj = new class implements JsonRpcMethodInterface {
-            public function __invoke(JsonRpcRequest $request): mixed
+            public function __invoke(JsonRpcRequest $request): RpcResultInterface
             {
                 // Method without IsAgreeTerms attribute
-                return [];
+                return EmptyResult::getMockResult();
             }
 
-            public function execute(): array
+            public function execute(RpcParamInterface $param): RpcResultInterface
             {
-                return [];
+                return EmptyResult::getMockResult();
             }
         };
 
@@ -60,15 +63,15 @@ final class RpcExecuteSubscriberTest extends AbstractEventSubscriberTestCase
         $subscriber = self::getService(RpcExecuteSubscriber::class);
 
         $methodObj = new #[IsAgreeTerms(type: ProtocolType::MEMBER_USAGE)] class implements JsonRpcMethodInterface {
-            public function __invoke(JsonRpcRequest $request): mixed
+            public function __invoke(JsonRpcRequest $request): RpcResultInterface
             {
                 // Method with IsAgreeTerms attribute
-                return [];
+                return EmptyResult::getMockResult();
             }
 
-            public function execute(): array
+            public function execute(RpcParamInterface $param): RpcResultInterface
             {
-                return [];
+                return EmptyResult::getMockResult();
             }
         };
 
@@ -86,15 +89,15 @@ final class RpcExecuteSubscriberTest extends AbstractEventSubscriberTestCase
         $subscriber = self::getService(RpcExecuteSubscriber::class);
 
         $methodObj = new #[IsAgreeTerms(type: ProtocolType::MEMBER_USAGE)] class implements JsonRpcMethodInterface {
-            public function __invoke(JsonRpcRequest $request): mixed
+            public function __invoke(JsonRpcRequest $request): RpcResultInterface
             {
                 // Method with IsAgreeTerms attribute
-                return [];
+                return EmptyResult::getMockResult();
             }
 
-            public function execute(): array
+            public function execute(RpcParamInterface $param): RpcResultInterface
             {
-                return [];
+                return EmptyResult::getMockResult();
             }
         };
 

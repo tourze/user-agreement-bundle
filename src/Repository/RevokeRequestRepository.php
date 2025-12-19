@@ -11,7 +11,7 @@ use UserAgreementBundle\Entity\RevokeRequest;
  * @extends ServiceEntityRepository<RevokeRequest>
  */
 #[AsRepository(entityClass: RevokeRequest::class)]
-class RevokeRequestRepository extends ServiceEntityRepository
+final class RevokeRequestRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

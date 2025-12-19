@@ -11,7 +11,7 @@ use UserAgreementBundle\Entity\AgreeLog;
  * @extends ServiceEntityRepository<AgreeLog>
  */
 #[AsRepository(entityClass: AgreeLog::class)]
-class AgreeLogRepository extends ServiceEntityRepository
+final class AgreeLogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

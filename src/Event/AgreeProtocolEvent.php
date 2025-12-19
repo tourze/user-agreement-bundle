@@ -6,7 +6,7 @@ use Tourze\UserEventBundle\Event\UserInteractionEvent;
 use UserAgreementBundle\Entity\AgreeLog;
 use UserAgreementBundle\Entity\ProtocolEntity;
 
-class AgreeProtocolEvent extends UserInteractionEvent
+final class AgreeProtocolEvent extends UserInteractionEvent
 {
     private ProtocolEntity $protocol;
 

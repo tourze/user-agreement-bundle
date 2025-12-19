@@ -3,15 +3,18 @@ services:
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    public: true
+    public: false
 
   UserAgreementBundle\Controller\:
     resource: '../../Controller/'
-  UserAgreementBundle\EventSubscriber\:
-    resource: '../../EventSubscriber/'
-  UserAgreementBundle\Procedure\:
-    resource: '../../Procedure/'
   UserAgreementBundle\Repository\:
     resource: '../../Repository/'
   UserAgreementBundle\Service\:
     resource: '../../Service/'
+    public: true
+  UserAgreementBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+    public: true
+  UserAgreementBundle\Procedure\:
+    resource: '../../Procedure/'
+    public: true

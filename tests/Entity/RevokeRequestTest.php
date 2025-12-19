@@ -46,7 +46,34 @@ final class RevokeRequestTest extends AbstractEntityTestCase
     public function testUserRelation(): void
     {
         $revokeRequest = new RevokeRequest();
-        $user = $this->createMock(UserInterface::class);
+
+        // Create a real UserInterface implementation instead of mock
+        $user = new class implements UserInterface {
+            public function getRoles(): array
+            {
+                return ['ROLE_USER'];
+            }
+
+            public function getPassword(): ?string
+            {
+                return null;
+            }
+
+            public function getSalt(): ?string
+            {
+                return null;
+            }
+
+            public function eraseCredentials(): void
+            {
+                // No credentials to erase
+            }
+
+            public function getUserIdentifier(): string
+            {
+                return 'test@example.com';
+            }
+        };
 
         $revokeRequest->setUser($user);
         $this->assertEquals($user, $revokeRequest->getUser());

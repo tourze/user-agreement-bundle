@@ -5,9 +5,7 @@ namespace UserAgreementBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\Attribute\When;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Tourze\DoctrineResolveTargetEntityBundle\Service\ResolveTargetEntityService;
-use Tourze\UserServiceContracts\UserServiceConstants;
+use Tourze\UserServiceContracts\UserManagerInterface;
 use UserAgreementBundle\Entity\RevokeRequest;
 use UserAgreementBundle\Enum\RevokeType;
 
@@ -25,18 +23,34 @@ class RevokeRequestFixtures extends Fixture
     public const REVOKE_REQUEST_NO_AVATAR = 'revoke-request-no-avatar';
 
     public function __construct(
-        private readonly ResolveTargetEntityService $resolveTargetEntityService,
+        private readonly UserManagerInterface $userManager,
     ) {
     }
 
     public function load(ObjectManager $manager): void
     {
+        // 通过 UserManager 创建测试用户
+        $users = [];
+        $userIdentifiers = [
+            1 => ['identifier' => 'revoke_user_1', 'nickName' => '张三'],
+            2 => ['identifier' => 'revoke_user_2', 'nickName' => '李四'],
+            3 => ['identifier' => 'revoke_user_3', 'nickName' => '王五'],
+            4 => ['identifier' => 'revoke_user_4', 'nickName' => '赵六'],
+            5 => ['identifier' => 'revoke_user_5', 'nickName' => '钱七'],
+        ];
+
+        foreach ($userIdentifiers as $index => $data) {
+            $user = $this->userManager->createUser(
+                userIdentifier: $data['identifier'],
+                nickName: $data['nickName'],
+            );
+            $this->userManager->saveUser($user);
+            $users[$index] = $user;
+        }
+
         // 1. 创建全渠道注销请求（已处理）
         $revokeRequest1 = new RevokeRequest();
-        $user1 = $this->createMockUser(UserServiceConstants::NORMAL_USER_REFERENCE_PREFIX . 1);
-        if ($user1 instanceof UserInterface) {
-            $revokeRequest1->setUser($user1);
-        }
+        $revokeRequest1->setUser($users[1]);
         $revokeRequest1->setType(RevokeType::All);
         $revokeRequest1->setIdentity('13800138001');
         $revokeRequest1->setNickName('张三');
@@ -47,10 +61,7 @@ class RevokeRequestFixtures extends Fixture
 
         // 2. 创建保留资料但不接收通知的注销请求
         $revokeRequest2 = new RevokeRequest();
-        $user2 = $this->createMockUser(UserServiceConstants::NORMAL_USER_REFERENCE_PREFIX . 2);
-        if ($user2 instanceof UserInterface) {
-            $revokeRequest2->setUser($user2);
-        }
+        $revokeRequest2->setUser($users[2]);
         $revokeRequest2->setType(RevokeType::NO_NOTIFY);
         $revokeRequest2->setIdentity('user002@test.example');
         $revokeRequest2->setNickName('李四');
@@ -61,10 +72,7 @@ class RevokeRequestFixtures extends Fixture
 
         // 3. 创建保留资料且接收通知的注销请求
         $revokeRequest3 = new RevokeRequest();
-        $user3 = $this->createMockUser(UserServiceConstants::NORMAL_USER_REFERENCE_PREFIX . 3);
-        if ($user3 instanceof UserInterface) {
-            $revokeRequest3->setUser($user3);
-        }
+        $revokeRequest3->setUser($users[3]);
         $revokeRequest3->setType(RevokeType::NOTIFY);
         $revokeRequest3->setIdentity('13900139003');
         $revokeRequest3->setNickName('王五');
@@ -74,10 +82,7 @@ class RevokeRequestFixtures extends Fixture
 
         // 4. 创建另一个全渠道注销请求（未处理）
         $revokeRequest4 = new RevokeRequest();
-        $user4 = $this->createMockUser(UserServiceConstants::NORMAL_USER_REFERENCE_PREFIX . 4);
-        if ($user4 instanceof UserInterface) {
-            $revokeRequest4->setUser($user4);
-        }
+        $revokeRequest4->setUser($users[4]);
         $revokeRequest4->setType(RevokeType::All);
         $revokeRequest4->setIdentity('user004@test.example');
         $revokeRequest4->setNickName('赵六');
@@ -88,10 +93,7 @@ class RevokeRequestFixtures extends Fixture
 
         // 5. 创建无头像的注销请求
         $revokeRequest5 = new RevokeRequest();
-        $user5 = $this->createMockUser(UserServiceConstants::NORMAL_USER_REFERENCE_PREFIX . 5);
-        if ($user5 instanceof UserInterface) {
-            $revokeRequest5->setUser($user5);
-        }
+        $revokeRequest5->setUser($users[5]);
         $revokeRequest5->setType(RevokeType::NO_NOTIFY);
         $revokeRequest5->setIdentity('15000150005');
         $revokeRequest5->setNickName('钱七');
@@ -108,23 +110,5 @@ class RevokeRequestFixtures extends Fixture
         $this->addReference(self::REVOKE_REQUEST_NOTIFY, $revokeRequest3);
         $this->addReference(self::REVOKE_REQUEST_ALL_2, $revokeRequest4);
         $this->addReference(self::REVOKE_REQUEST_NO_AVATAR, $revokeRequest5);
-    }
-
-    /**
-     * 创建模拟用户
-     *
-     * @return object|null 如果无法解析用户实体类或引用不存在，返回 null
-     */
-    private function createMockUser(string $reference = 'user-1'): ?object
-    {
-        try {
-            $userClass = $this->resolveTargetEntityService->findEntityClass(UserInterface::class);
-
-            return $this->getReference($reference, $userClass);
-        } catch (\Exception $e) {
-            // 在测试环境中可能没有配置用户实体映射，此时返回 null
-            // 这允许 Fixture 在隔离测试中优雅地处理缺失依赖
-            return null;
-        }
     }
 }

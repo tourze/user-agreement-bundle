@@ -12,7 +12,7 @@ use UserAgreementBundle\Service\ProtocolService;
 /**
  * 协议版本，必须同意，增加注解来自动判断
  */
-class RpcExecuteSubscriber
+final class RpcExecuteSubscriber
 {
     public function __construct(
         private readonly Security $security,
